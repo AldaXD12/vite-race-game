@@ -1,0 +1,31 @@
+.hud {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: white;
+    font-size: 20px;
+    font-family: sans-serif;
+    z-index: 10;
+  }
+  
+  .lives, .timer {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 6px 12px;
+    border-radius: 8px;
+    margin-bottom: 5px;
+  }
+  
+  .message {
+    padding: 6px 12px;
+    background: rgba(255, 0, 0, 0.8);
+    border-radius: 8px;
+    font-weight: bold;
+    animation: blink 0.3s steps(2, start) infinite;
+  }
+  
+  @keyframes blink {
+    to {
+      visibility: hidden;
+    }
+  }
+  

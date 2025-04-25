@@ -1,0 +1,1 @@
+.hud{position:absolute;top:10px;left:10px;color:#fff;font-size:20px;font-family:sans-serif;z-index:10}.lives,.timer{background:#00000080;padding:6px 12px;border-radius:8px;margin-bottom:5px}.message{padding:6px 12px;background:#f00c;border-radius:8px;font-weight:700;animation:blink .3s steps(2,start) infinite}@keyframes blink{to{visibility:hidden}}
