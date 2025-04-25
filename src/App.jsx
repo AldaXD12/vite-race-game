@@ -1,4 +1,4 @@
-// App.jsx reorganizado con modelo .glb y efecto de colisión con música de fondo (music1.mp3)
+// App.jsx reorganizado con modelo .glb, efecto de colisión y música de fondo funcional
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Suspense, useRef, useEffect, useState, useMemo } from 'react'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
@@ -6,6 +6,7 @@ import { useLoader } from '@react-three/fiber'
 import * as THREE from 'three'
 import './App.css'
 
+// Componente del auto cargado desde modelo .glb y controlado por teclas
 function Auto({ modelRef, keys, isGameOver }) {
   const gltf = useLoader(GLTFLoader, '/models/auto.glb')
 
@@ -35,6 +36,7 @@ function Auto({ modelRef, keys, isGameOver }) {
   )
 }
 
+// Partículas para efecto de explosión al colisionar
 function Explosion({ position }) {
   const particles = useRef()
   const count = 150
@@ -77,6 +79,7 @@ function Explosion({ position }) {
   )
 }
 
+// Componente de obstáculo con lógica de colisión y reinicio
 function Obstacle({ targetRef, onCollision, onPassed, speed = 1, color = 'red', isGameOver }) {
   const obstacleRef = useRef()
 
@@ -110,6 +113,7 @@ function Obstacle({ targetRef, onCollision, onPassed, speed = 1, color = 'red', 
   )
 }
 
+// Cámara que sigue al modelo principal
 function CameraFollow({ target }) {
   const { camera } = useThree()
 
@@ -124,6 +128,7 @@ function CameraFollow({ target }) {
   return null
 }
 
+// Componente del suelo con líneas blancas como carriles
 function Pista() {
   return (
     <>
@@ -157,6 +162,7 @@ function Pista() {
   )
 }
 
+// Lista de 20 niveles progresivos
 const niveles = Array.from({ length: 20 }, (_, i) => ({
   meta: (i + 1) * 5,
   color: `hsl(${i * 18}, 100%, 50%)`,
@@ -164,6 +170,7 @@ const niveles = Array.from({ length: 20 }, (_, i) => ({
   velocidad: 1 + i * 0.05
 }))
 
+// Componente principal que administra el juego
 function App() {
   const modelRef = useRef()
   const keys = useRef({})
@@ -180,6 +187,16 @@ function App() {
   const musicRef = useRef(null)
 
   const nivelActual = niveles[nivelIndex] || niveles[niveles.length - 1]
+
+  // Reproduce o pausa la música según el estado del juego
+  useEffect(() => {
+    if (started && !isGameOver) {
+      musicRef.current?.play()
+    } else {
+      musicRef.current?.pause()
+      musicRef.current.currentTime = 0
+    }
+  }, [started, isGameOver])
 
   useEffect(() => {
     const down = (e) => (keys.current[e.key.toLowerCase()] = true)
@@ -203,7 +220,6 @@ function App() {
     if (lives <= 0) {
       setIsGameOver(true)
       setMessage('💀 GAME OVER')
-      musicRef.current?.pause()
     }
   }, [lives])
 
@@ -215,7 +231,6 @@ function App() {
     } else if (nivelIndex === niveles.length - 1 && obstaculosPasados >= nivelActual.meta) {
       setMessage('🎉 GANADOR HDSPT')
       setIsGameOver(true)
-      musicRef.current?.pause()
     }
   }, [obstaculosPasados])
 
@@ -246,20 +261,12 @@ function App() {
     setPaused(false)
     setStarted(false)
     if (modelRef.current) modelRef.current.position.set(0, 0.1, 0)
-    musicRef.current?.pause()
-    musicRef.current.currentTime = 0
-  }
-
-  const startGame = () => {
-    setStarted(true)
-    musicRef.current?.play()
   }
 
   return (
     <>
       <audio ref={audioRef} src="/audio/choque.mp3" preload="auto" />
       <audio ref={musicRef} src="/audio/music1.mp3" preload="auto" loop />
-
       <Canvas shadows camera={{ position: [0, 3, 8], fov: 60 }}>
         <ambientLight intensity={0.5} />
         <directionalLight position={[5, 10, 5]} intensity={1} castShadow />
@@ -287,9 +294,8 @@ function App() {
           )}
         </Suspense>
       </Canvas>
-
       <div className="hud">
-        {!started && <button onClick={startGame}>▶️ Iniciar Juego</button>}
+        {!started && <button onClick={() => setStarted(true)}>▶️ Iniciar Juego</button>}
         {started && !isGameOver && (
           <button onClick={() => setPaused((p) => !p)}>{paused ? '▶️ Reanudar' : '⏸️ Pausar'}</button>
         )}
@@ -300,4 +306,4 @@ function App() {
   )
 }
 
-export default App
+export default App;
