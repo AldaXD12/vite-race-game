@@ -2,12 +2,10 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// Configuración para que Vite genere rutas relativas correctas al desplegar en GitHub Pages
 export default defineConfig({
-  base: '/vite-race-game/', // 👈 Esta línea es obligatoria para GitHub Pages
   plugins: [react()],
+  base: './', // Muy importante para que funcione correctamente en producción (por ejemplo en GitHub Pages)
   build: {
-    outDir: 'dist', // Carpeta donde se genera la versión final para producción
-    sourcemap: false,
-  }
+    outDir: 'dist',
+  },
 })
